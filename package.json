@@ -1,0 +1,10 @@
+{
+	"name"		:	"sample-signup-app",
+	"version"	:	"0.0.1",
+	"description"	:	"Application",
+	"main"		:	"server.js",
+	"author"	:	"Hitesh Patel",
+	"dependencies"	:	{
+		"express"	:	"3.3.5"
+	}
+}

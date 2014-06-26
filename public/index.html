@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/app.css">
+    <!--<style>-->
+        <!--.class51 { fill: #ddc; }-->
+        <!--.subunit { fill: #cdd; }-->
+        <!--.subunit { fill: #cdc; }-->
+    <!--</style>-->
+</head>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="js/d3.geo.js"></script>
+<script>
+
+//    d3.csv("csv/places.csv", function(error, places) {
+//        if (error) return console.error(error);
+//        console.log(places);
+//    });
+
+    var width = 1280, height = 800;
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+    var projection = d3.geo
+            .azimuthal()
+            .mode("equidistant")
+            .origin([-98, 38])
+            .scale(1500)
+            .translate([640, 360]);
+
+    var path = d3.geo.path()
+            .projection(projection);
+
+    var states = svg.append("svg:g")
+            .attr("id", "states");
+
+    var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+    d3.json("json/usa.json", function(error, usa) {
+        if (error) return console.error(error);
+        states.selectAll("path").data(usa.features)
+                .enter().append("svg:path")
+                .attr("d",path)
+                .attr("class", function(d){
+                    return "class" + d.id;
+                })
+                .style("fill", function(){
+                    return "hsl(" + Math.random() * 360 + ",60%,30%)";
+                });
+
+        d3.csv("csv/places.csv", function(error, places){
+            svg.selectAll(".pin")
+                    .data(places)
+                    .enter()
+                    .append("circle", ".pin")
+                    .attr("r",3)
+                    .attr("transform", function(d){
+                        return "translate(" + projection([
+                            d.longitude,
+                            d.latitude
+                        ]) + ")"
+                    })
+                    .on("mouseover", function(d) {
+                        div.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                        div .html("<img src='img/" + d.imageName +"' style='height:"+ d.imageHeight+"px'/>" + d.name)
+                                .style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 30) + "px");
+                    })
+                    .on("mouseout", function(d) {
+                        div.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                    });
+        });
+    });
+</script>
+</body>
+</html>
